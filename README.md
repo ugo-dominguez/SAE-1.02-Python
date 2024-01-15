@@ -38,5 +38,6 @@
 'mur': False,
 'objet': '&',
 'pacmans_presents': {'A','B'},
-'fantomes_presents': {'A','b','c'}}
+'fantomes_presents': {'A','b','c'}
+}
 ```
