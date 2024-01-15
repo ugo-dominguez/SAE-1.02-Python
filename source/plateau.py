@@ -223,8 +223,8 @@ def Plateau(plan):
     cases = []
     for i in range(1, nb_lignes + 1):
         ligne = []
-        for j in range(len(tp[i])):
-            set_joueurs, set_fantomes = {player for player in joueurs.keys() if joueurs[player] == (i+1,j+1)}, {phantom for phantom in fantomes.keys() if fantomes[phantom] == (i+1,j+1)}
+        for j in range(nb_colonnes):
+            set_joueurs, set_fantomes = {player for player in joueurs.keys() if joueurs[player] == (i-1,j)}, {phantom for phantom in fantomes.keys() if fantomes[phantom] == (i-1,j)}
             ligne.append(case.Case(tp[i][j] == '#', tp[i][j] if tp[i][j] in const.LES_OBJETS else const.AUCUN, None if set_joueurs == set() else set_joueurs, None if set_fantomes == set() else set_fantomes))
         cases.append(ligne)
 
