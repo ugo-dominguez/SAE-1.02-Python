@@ -22,7 +22,7 @@ def get_nb_lignes(plateau):
     Returns:
         int: le nombre de lignes du plateau
     """
-    pass
+    return plateau['nb_lignes']
 
 
 def get_nb_colonnes(plateau):
@@ -34,7 +34,8 @@ def get_nb_colonnes(plateau):
     Returns:
         int: le nombre de colonnes du plateau
     """
-    pass
+    return plateau['nb_colonnes']
+
 
 def pos_ouest(plateau, pos):
     """retourne la position de la case à l'ouest de pos
@@ -47,6 +48,7 @@ def pos_ouest(plateau, pos):
     """
     pass
 
+
 def pos_est(plateau, pos):
     """retourne la position de la case à l'est de pos
 
@@ -57,6 +59,7 @@ def pos_est(plateau, pos):
         int: un tuple d'entiers
     """
     pass
+
 
 def pos_nord(plateau, pos):
     """retourne la position de la case au nord de pos
@@ -69,6 +72,7 @@ def pos_nord(plateau, pos):
     """
     pass
 
+
 def pos_sud(plateau, pos):
     """retourne la position de la case au sud de pos
 
@@ -79,6 +83,7 @@ def pos_sud(plateau, pos):
         int: un tuple d'entiers
     """
     pass
+
 
 def pos_arrivee(plateau,pos,direction):
     """ calcule la position d'arrivée si on part de pos et qu'on va dans
@@ -94,6 +99,7 @@ def pos_arrivee(plateau,pos,direction):
     """
     pass
 
+
 def get_case(plateau, pos):
     """retourne la case qui se trouve à la position pos du plateau
 
@@ -106,6 +112,7 @@ def get_case(plateau, pos):
     """
     pass
 
+
 def get_objet(plateau, pos):
     """retourne l'objet qui se trouve à la position pos du plateau
 
@@ -116,7 +123,8 @@ def get_objet(plateau, pos):
     Returns:
         str: le caractère symbolisant l'objet
     """
-    pass
+    return plateau['cases'][pos[0]][pos[1]]
+
 
 def poser_pacman(plateau, pacman, pos):
     """pose un pacman en position pos sur le plateau
@@ -126,7 +134,8 @@ def poser_pacman(plateau, pacman, pos):
         pacman (str): la lettre représentant le pacman
         pos (tuple): une paire (lig,col) de deux int
     """
-    pass
+    plateau['cases'][pos[0]][pos[1]] = pacman
+
 
 def poser_fantome(plateau, fantome, pos):
     """pose un fantome en position pos sur le plateau
@@ -136,7 +145,8 @@ def poser_fantome(plateau, fantome, pos):
         fantome (str): la lettre représentant le fantome
         pos (tuple): une paire (lig,col) de deux int
     """
-    pass
+    plateau['cases'][pos[0]][pos[1]] = fantome
+
 
 def poser_objet(plateau, objet, pos):
     """Pose un objet en position pos sur le plateau. Si cette case contenait déjà
@@ -147,7 +157,8 @@ def poser_objet(plateau, objet, pos):
         objet (int): un entier représentant l'objet. const.AUCUN indique aucun objet
         pos (tuple): une paire (lig,col) de deux int
     """
-    pass
+    plateau['cases'][pos[0]][pos[1]] = objet
+
 
 def plateau_from_str(la_chaine, complet=True):
     """Construit un plateau à partir d'une chaine de caractère contenant les informations
@@ -159,22 +170,34 @@ def plateau_from_str(la_chaine, complet=True):
     Returns:
         dict: le plateau correspondant à la chaine. None si l'opération a échoué
     """
-    pass
 
-def Plateau(plan):
-    """Créer un plateau en respectant le plan donné en paramètre.
-        Le plan est une chaine de caractères contenant
-            '#' (mur)
-            ' ' (couloir non peint)
-            une lettre majuscule (un couloir peint par le joueur représenté par la lettre)
+    tp = la_chaine.split('\n')
+    for i in range(len(tp)):
+        if ';' in tp[i]:
+            tp[i] = tp[i].split(';')
+    tp = tuple(tp)
 
-    Args:
-        plan (str): le plan sous la forme d'une chaine de caractères
+    nb_lignes, nb_colonnes = int(tp[0][0]), int(tp[0][1])
+    nb_joueurs = int(tp[nb_lignes + 1])
+    nb_fantomes = int(tp[nb_lignes + nb_joueurs + 2])
+    cases = [tp[i] for i in range(1, nb_lignes + 1)]
 
-    Returns:
-        dict: Le plateau correspondant au plan
-    """
-    pass
+    def positions(nb_entite, ind_entite):
+        dico = {}
+        for i in range(ind_entite, ind_entite + nb_entite, 1):
+            dico[tp[i][0]] = int(tp[i][1]), int(tp[i][2])
+        
+        return dico
+
+    res = {'nb_lignes': nb_lignes,
+            'nb_colonnes': nb_colonnes,
+            'nb_joueurs': nb_joueurs,
+            'nb_fantomes': nb_fantomes,
+            'cases': cases,
+            'joueurs': positions(nb_joueurs, nb_lignes + 2),
+            'fantomes': positions(nb_fantomes, nb_lignes + nb_joueurs + 3)}
+
+    return res
 
 
 def set_case(plateau, pos, une_case):
@@ -185,9 +208,7 @@ def set_case(plateau, pos, une_case):
         pos (tuple): une paire (lig,col) de deux int
         une_case (dict): la nouvelle case
     """
-    pass
-
-
+    plateau['cases'][pos[0]][pos[1]] = une_case
 
 
 def enlever_pacman(plateau, pacman, pos):
@@ -267,7 +288,7 @@ def deplacer_fantome(plateau, fantome, pos, direction):
     pass
 
 def case_vide(plateau):
-    """choisi aléatoirement sur la plateau une case qui n'est pas un mur et qui
+    """choisi aléatoirement sur le plateau une case qui n'est pas un mur et qui
        ne contient ni pacman ni fantome ni objet
 
     Args:

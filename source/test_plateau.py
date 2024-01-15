@@ -400,7 +400,7 @@ class test_case(unittest.TestCase):
         self.assertEqual(obtenu[cle],attendu[cle],
                          "Les distances pour les "+cle)
 
-        self.assertEqual(res['objets'])
+        #self.assertEqual(res['objets'])
     def test_analyse_plateau(self):
         p2=plateau.Plateau(self.plateau2)
         pos=(5,6)
@@ -437,5 +437,5 @@ class test_case(unittest.TestCase):
 
         
 if __name__ == '__main__':
-    unittest.main()       
+    unittest.main() 
         
