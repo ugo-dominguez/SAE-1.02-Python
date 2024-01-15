@@ -31,3 +31,12 @@
 'fantomes': {'a': (7, 5), 'b': (10, 1), 'c': (10, 12), 'd': (7, 5), 'e': (3, 6)}
 }
 ```
+
+### Exemple de plateau
+```python
+{
+'mur': False,
+'objet': '&',
+'pacmans_presents': {'A','B'},
+'fantomes_presents': {'A','b','c'}}
+```
