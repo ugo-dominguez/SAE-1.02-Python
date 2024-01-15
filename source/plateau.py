@@ -46,7 +46,11 @@ def pos_ouest(plateau, pos):
     Returns:
         int: un tuple d'entiers
     """
-    pass
+    west_pos = [pos[0], pos[1] - 1]
+    if west_pos[1] < 0:
+        west_pos[1] = get_nb_colonnes(plateau) - 1
+        
+    return tuple(west_pos)
 
 
 def pos_est(plateau, pos):
@@ -58,8 +62,11 @@ def pos_est(plateau, pos):
     Returns:
         int: un tuple d'entiers
     """
-    pass
+    east_pos = [pos[0], pos[1] + 1]
+    if east_pos[1] >= get_nb_colonnes(plateau):
+        east_pos[1] = 0
 
+    return tuple(east_pos)
 
 def pos_nord(plateau, pos):
     """retourne la position de la case au nord de pos
@@ -70,7 +77,11 @@ def pos_nord(plateau, pos):
     Returns:
         int: un tuple d'entiers
     """
-    pass
+    north_pos = [pos[0] - 1, pos[1]]
+    if north_pos[0] < 0:
+        north_pos[0] = get_nb_lignes(plateau) - 1
+
+    return tuple(north_pos)
 
 
 def pos_sud(plateau, pos):
@@ -82,7 +93,11 @@ def pos_sud(plateau, pos):
     Returns:
         int: un tuple d'entiers
     """
-    pass
+    south_pos = [pos[0] + 1, pos[1]]
+    if south_pos[0] >= get_nb_lignes(plateau):
+        south_pos[0] = 0
+
+    return tuple(south_pos)
 
 
 def pos_arrivee(plateau,pos,direction):
@@ -110,7 +125,7 @@ def get_case(plateau, pos):
     Returns:
         dict: La case qui se situe à la position pos du plateau
     """
-    pass
+    return plateau['cases'][pos[0]][pos[1]]
 
 
 def get_objet(plateau, pos):
@@ -123,7 +138,7 @@ def get_objet(plateau, pos):
     Returns:
         str: le caractère symbolisant l'objet
     """
-    return plateau['cases'][pos[0]][pos[1]]
+    return plateau['cases'][pos[0]][pos[1]]['objet']
 
 
 def poser_pacman(plateau, pacman, pos):
@@ -170,34 +185,7 @@ def plateau_from_str(la_chaine, complet=True):
     Returns:
         dict: le plateau correspondant à la chaine. None si l'opération a échoué
     """
-
-    tp = la_chaine.split('\n')
-    for i in range(len(tp)):
-        if ';' in tp[i]:
-            tp[i] = tp[i].split(';')
-    tp = tuple(tp)
-
-    nb_lignes, nb_colonnes = int(tp[0][0]), int(tp[0][1])
-    nb_joueurs = int(tp[nb_lignes + 1])
-    nb_fantomes = int(tp[nb_lignes + nb_joueurs + 2])
-    cases = [tp[i] for i in range(1, nb_lignes + 1)]
-
-    def positions(nb_entite, ind_entite):
-        dico = {}
-        for i in range(ind_entite, ind_entite + nb_entite, 1):
-            dico[tp[i][0]] = int(tp[i][1]), int(tp[i][2])
-        
-        return dico
-
-    res = {'nb_lignes': nb_lignes,
-            'nb_colonnes': nb_colonnes,
-            'nb_joueurs': nb_joueurs,
-            'nb_fantomes': nb_fantomes,
-            'cases': cases,
-            'joueurs': positions(nb_joueurs, nb_lignes + 2),
-            'fantomes': positions(nb_fantomes, nb_lignes + nb_joueurs + 3)}
-
-    return res
+    pass
 
 
 def Plateau(plan):
@@ -213,7 +201,42 @@ def Plateau(plan):
     Returns:
         dict: Le plateau correspondant au plan
     """
-    pass
+    tp = plan.split('\n')
+    for i in range(len(tp)):
+        if ';' in tp[i]:
+            tp[i] = tp[i].split(';')
+    tp = tuple(tp)
+
+    def positions(nb_entite, ind_entite):
+        dico = {}
+        for i in range(ind_entite, ind_entite + nb_entite, 1):
+            dico[tp[i][0]] = int(tp[i][1]), int(tp[i][2])
+        
+        return dico
+
+    nb_lignes, nb_colonnes = int(tp[0][0]), int(tp[0][1])
+    nb_joueurs = int(tp[nb_lignes + 1])
+    nb_fantomes = int(tp[nb_lignes + nb_joueurs + 2])
+    joueurs = positions(nb_joueurs, nb_lignes + 2)
+    fantomes = positions(nb_fantomes, nb_lignes + nb_joueurs + 3)
+
+    cases = []
+    for i in range(1, nb_lignes + 1):
+        ligne = []
+        for j in range(len(tp[i])):
+            set_joueurs, set_fantomes = {player for player in joueurs.keys() if joueurs[player] == (i+1,j+1)}, {phantom for phantom in fantomes.keys() if fantomes[phantom] == (i+1,j+1)}
+            ligne.append(case.Case(tp[i][j] == '#', tp[i][j] if tp[i][j] in const.LES_OBJETS else const.AUCUN, None if set_joueurs == set() else set_joueurs, None if set_fantomes == set() else set_fantomes))
+        cases.append(ligne)
+
+    res = {'nb_lignes': nb_lignes,
+            'nb_colonnes': nb_colonnes,
+            'nb_joueurs': nb_joueurs,
+            'nb_fantomes': nb_fantomes,
+            'cases': cases,
+            'joueurs': joueurs,
+            'fantomes': fantomes}
+
+    return res
 
 
 def set_case(plateau, pos, une_case):
@@ -401,4 +424,3 @@ def plateau_2_str(plateau):
         for fantome, lig, col in fantomes:
             res += str(fantome)+";"+str(lig)+";"+str(col)+"\n"
         return res
-
