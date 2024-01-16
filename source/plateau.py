@@ -183,19 +183,6 @@ def poser_objet(plateau, objet, pos):
     plateau['cases'][pos[0]][pos[1]] = objet
 
 
-def plateau_from_str(la_chaine, complet=True):
-    """Construit un plateau à partir d'une chaine de caractère contenant les informations
-        sur le contenu du plateau (voir sujet)
-
-    Args:
-        la_chaine (str): la chaine de caractères décrivant le plateau
-
-    Returns:
-        dict: le plateau correspondant à la chaine. None si l'opération a échoué
-    """
-    pass
-
-
 def Plateau(plan):
     """Créer un plateau en respectant le plan donné en paramètre.
         Le plan est une chaine de caractères contenant
