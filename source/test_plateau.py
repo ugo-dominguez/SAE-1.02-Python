@@ -2,6 +2,8 @@ import unittest
 import const
 import plateau
 import case
+
+
 class test_case(unittest.TestCase):  
     def setUp(self):
         with open("cartes/test1.txt") as fic:
@@ -97,8 +99,8 @@ class test_case(unittest.TestCase):
                          "La position au nord de la case (0,12) devrait être ("+\
                             str(plateau.get_nb_lignes(p1)-1)+",12)"+\
                             " alors que vous retournez "+str(res))
-        res=plateau.pos_nord(p1,(28,0))
-        self.assertEqual(res,(27,0),
+        res=plateau.pos_nord(p1,(18,0))
+        self.assertEqual(res,(17,0),
                          "La position au nord de la case (28,0) devrait être (27,0)"+\
                             " alors que vous retournez "+str(res))
         p2=plateau.Plateau(self.plateau2)
@@ -357,7 +359,7 @@ class test_case(unittest.TestCase):
                          " or dans votre implémentation "+fantome+" n'est pas dans cette case"
                               )
 
-    def test_deplacer_pacman(self):
+    def test_deplacer_fantome(self):
         p2=plateau.Plateau(self.plateau2)
         self.verif_deplacement_f(p2,(1,9),(1,8),'c','O')
         p2=plateau.Plateau(self.plateau2)
@@ -394,13 +396,7 @@ class test_case(unittest.TestCase):
                          "Sur le plateau test2.txt, l'ensemble des directions possibles à partir de "+\
                                 " (3,2) est NSEO or votre fonction retourne "+
                                 str(res))
-    def verif_distances(self,attendu, obtenu,cle):
-        attendu[cle].sort()
-        obtenu[cle].sort()
-        self.assertEqual(obtenu[cle],attendu[cle],
-                         "Les distances pour les "+cle)
-
-        #self.assertEqual(res['objets'])
+ 
     def test_analyse_plateau(self):
         p2=plateau.Plateau(self.plateau2)
         pos=(5,6)
@@ -438,4 +434,3 @@ class test_case(unittest.TestCase):
         
 if __name__ == '__main__':
     unittest.main() 
-        
