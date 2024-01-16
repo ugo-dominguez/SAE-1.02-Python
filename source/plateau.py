@@ -298,7 +298,7 @@ def prendre_objet(plateau, pos):
         int: l'entier représentant l'objet qui se trouvait sur la case.
         const.AUCUN indique aucun objet
     """
-    pass
+    return case.prendre_objet(get_case(plateau, pos))
 
         
 def deplacer_pacman(plateau, pacman, pos, direction, passemuraille=False):
