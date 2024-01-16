@@ -12,7 +12,6 @@ import case
 import random
 
 
-
 def get_nb_lignes(plateau):
     """retourne le nombre de lignes du plateau
 
@@ -46,11 +45,11 @@ def pos_ouest(plateau, pos):
     Returns:
         int: un tuple d'entiers
     """
-    west_pos = [pos[0], pos[1] - 1]
-    if west_pos[1] < 0:
-        west_pos[1] = get_nb_colonnes(plateau) - 1
+    west_pos = pos[1] - 1
+    if west_pos < 0:
+        west_pos = get_nb_colonnes(plateau) - 1
         
-    return tuple(west_pos)
+    return pos[0], west_pos
 
 
 def pos_est(plateau, pos):
@@ -62,11 +61,11 @@ def pos_est(plateau, pos):
     Returns:
         int: un tuple d'entiers
     """
-    east_pos = [pos[0], pos[1] + 1]
-    if east_pos[1] >= get_nb_colonnes(plateau):
-        east_pos[1] = 0
+    east_pos = pos[1] + 1
+    if east_pos >= get_nb_colonnes(plateau):
+        east_pos = 0
 
-    return tuple(east_pos)
+    return pos[0], east_pos
 
 def pos_nord(plateau, pos):
     """retourne la position de la case au nord de pos
@@ -77,11 +76,11 @@ def pos_nord(plateau, pos):
     Returns:
         int: un tuple d'entiers
     """
-    north_pos = [pos[0] - 1, pos[1]]
-    if north_pos[0] < 0:
-        north_pos[0] = get_nb_lignes(plateau) - 1
+    north_pos = pos[0] - 1
+    if north_pos < 0:
+        north_pos = get_nb_lignes(plateau) - 1
 
-    return tuple(north_pos)
+    return north_pos, pos[1]
 
 
 def pos_sud(plateau, pos):
@@ -93,11 +92,11 @@ def pos_sud(plateau, pos):
     Returns:
         int: un tuple d'entiers
     """
-    south_pos = [pos[0] + 1, pos[1]]
-    if south_pos[0] >= get_nb_lignes(plateau):
-        south_pos[0] = 0
+    south_pos = pos[0] + 1
+    if south_pos >= get_nb_lignes(plateau):
+        south_pos = 0
 
-    return tuple(south_pos)
+    return south_pos, pos[1]
 
 
 def pos_arrivee(plateau,pos,direction):
@@ -112,8 +111,17 @@ def pos_arrivee(plateau,pos,direction):
     Returns:
         None|tuple: None ou une paire d'entiers indiquant la position d'arrivée
     """
-    pass
+    next_pos = None
+    if direction == 'O':
+        next_pos = pos_ouest(plateau, pos)
+    elif direction == 'E':
+        next_pos = pos_est(plateau, pos)
+    elif direction == 'N':
+        next_pos = pos_nord(plateau, pos)
+    elif direction == 'S':
+        next_pos = pos_sud(plateau, pos)
 
+    return next_pos
 
 def get_case(plateau, pos):
     """retourne la case qui se trouve à la position pos du plateau
@@ -261,7 +269,7 @@ def enlever_pacman(plateau, pacman, pos):
     Returns:
         bool: True si l'opération s'est bien déroulée, False sinon
     """
-    pass
+    return case.prendre_pacman(get_case(plateau, pos), pacman)
 
 
 def enlever_fantome(plateau, fantome, pos):
@@ -275,7 +283,7 @@ def enlever_fantome(plateau, fantome, pos):
     Returns:
         bool: True si l'opération s'est bien déroulée, False sinon
     """
-    pass
+    return case.prendre_fantome(get_case(plateau, pos), fantome)
 
 
 def prendre_objet(plateau, pos):
@@ -308,7 +316,14 @@ def deplacer_pacman(plateau, pacman, pos, direction, passemuraille=False):
         (int,int): une paire (lig,col) indiquant la position d'arrivée du pacman 
                    (None si le pacman n'a pas pu se déplacer)
     """
-    pass
+    next_pos = pos_arrivee(plateau, pos, direction)
+
+    if passemuraille or not case.est_mur(get_case(plateau, next_pos)):
+        enlever_pacman(plateau, pacman, pos)
+        poser_pacman(plateau, pacman, next_pos)
+        plateau['joueurs'][pacman] = next_pos
+        return next_pos
+
 
 def deplacer_fantome(plateau, fantome, pos, direction):
     """Déplace dans la direction indiquée un fantome se trouvant en position pos
@@ -324,7 +339,13 @@ def deplacer_fantome(plateau, fantome, pos, direction):
         (int,int): une paire (lig,col) indiquant la position d'arrivée du fantome
                    None si le joueur n'a pas pu se déplacer
     """
-    pass
+    next_pos = pos_arrivee(plateau, pos, direction)
+
+    if not case.est_mur(get_case(plateau, next_pos)):
+        enlever_fantome(plateau, fantome, pos)
+        poser_fantome(plateau, fantome, next_pos)
+        plateau['fantomes'][fantome] = next_pos
+        return next_pos
 
 def case_vide(plateau):
     """choisi aléatoirement sur le plateau une case qui n'est pas un mur et qui
@@ -424,3 +445,4 @@ def plateau_2_str(plateau):
         for fantome, lig, col in fantomes:
             res += str(fantome)+";"+str(lig)+";"+str(col)+"\n"
         return res
+
