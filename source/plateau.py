@@ -316,7 +316,13 @@ def deplacer_pacman(plateau, pacman, pos, direction, passemuraille=False):
         (int,int): une paire (lig,col) indiquant la position d'arrivée du pacman 
                    (None si le pacman n'a pas pu se déplacer)
     """
+
+    if pacman not in plateau["joueurs"] or plateau["joueurs"][pacman] != pos:
+        return
+    
     next_pos = pos_arrivee(plateau, pos, direction)
+    if next_pos is None:
+        return
 
     if passemuraille or not case.est_mur(get_case(plateau, next_pos)):
         enlever_pacman(plateau, pacman, pos)
@@ -339,13 +345,20 @@ def deplacer_fantome(plateau, fantome, pos, direction):
         (int,int): une paire (lig,col) indiquant la position d'arrivée du fantome
                    None si le joueur n'a pas pu se déplacer
     """
+
+    if fantome not in plateau["fantomes"]:
+        return
+    
     next_pos = pos_arrivee(plateau, pos, direction)
+    if next_pos is None:
+        return
 
     if not case.est_mur(get_case(plateau, next_pos)):
         enlever_fantome(plateau, fantome, pos)
         poser_fantome(plateau, fantome, next_pos)
         plateau['fantomes'][fantome] = next_pos
         return next_pos
+    
 
 def case_vide(plateau):
     """choisi aléatoirement sur le plateau une case qui n'est pas un mur et qui
