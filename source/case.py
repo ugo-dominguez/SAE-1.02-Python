@@ -195,4 +195,3 @@ def prendre_fantome(case, fantome):
         return True
     else:
         return None
-
