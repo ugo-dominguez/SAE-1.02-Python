@@ -12,6 +12,7 @@ import case
 import random
 
 
+
 def get_nb_lignes(plateau):
     """retourne le nombre de lignes du plateau
 
@@ -146,7 +147,7 @@ def get_objet(plateau, pos):
     Returns:
         str: le caractère symbolisant l'objet
     """
-    return plateau['cases'][pos[0]][pos[1]]['objet']
+    return case.get_objet(get_case(plateau, pos))
 
 
 def poser_pacman(plateau, pacman, pos):
@@ -157,7 +158,7 @@ def poser_pacman(plateau, pacman, pos):
         pacman (str): la lettre représentant le pacman
         pos (tuple): une paire (lig,col) de deux int
     """
-    plateau['cases'][pos[0]][pos[1]] = pacman
+    case.poser_pacman(get_case(plateau, pos), pacman)
 
 
 def poser_fantome(plateau, fantome, pos):
@@ -168,7 +169,7 @@ def poser_fantome(plateau, fantome, pos):
         fantome (str): la lettre représentant le fantome
         pos (tuple): une paire (lig,col) de deux int
     """
-    plateau['cases'][pos[0]][pos[1]] = fantome
+    case.poser_fantome(get_case(plateau, pos), fantome)
 
 
 def poser_objet(plateau, objet, pos):
@@ -208,20 +209,26 @@ def Plateau(plan):
             dico[tp[i][0]] = int(tp[i][1]), int(tp[i][2])
         
         return dico
-
+    
     nb_lignes, nb_colonnes = int(tp[0][0]), int(tp[0][1])
     nb_joueurs = int(tp[nb_lignes + 1])
     nb_fantomes = int(tp[nb_lignes + nb_joueurs + 2])
     joueurs = positions(nb_joueurs, nb_lignes + 2)
     fantomes = positions(nb_fantomes, nb_lignes + nb_joueurs + 3)
-
     cases = []
-    for i in range(1, nb_lignes + 1):
-        ligne = []
-        for j in range(nb_colonnes):
-            set_joueurs, set_fantomes = {player for player in joueurs.keys() if joueurs[player] == (i-1,j)}, {phantom for phantom in fantomes.keys() if fantomes[phantom] == (i-1,j)}
-            ligne.append(case.Case(tp[i][j] == '#', tp[i][j] if tp[i][j] in const.LES_OBJETS else const.AUCUN, None if set_joueurs == set() else set_joueurs, None if set_fantomes == set() else set_fantomes))
-        cases.append(ligne)
+
+    for y in range(nb_lignes):
+        cases.append([])
+
+        for elem in tp[y + 1]:
+            if elem == const.AUCUN:
+                cases[y].append(case.Case())
+
+            elif elem in const.LES_OBJETS:
+                cases[y].append(case.Case(objet=elem))
+
+            else:
+                cases[y].append(case.Case(mur=True))
 
     res = {'nb_lignes': nb_lignes,
             'nb_colonnes': nb_colonnes,
@@ -230,6 +237,12 @@ def Plateau(plan):
             'cases': cases,
             'joueurs': joueurs,
             'fantomes': fantomes}
+
+    for pacman in joueurs:
+        poser_pacman(res, pacman, joueurs[pacman])
+
+    for fantom in fantomes:
+        poser_fantome(res, fantom, fantomes[fantom])
 
     return res
 
@@ -432,4 +445,3 @@ def plateau_2_str(plateau):
         for fantome, lig, col in fantomes:
             res += str(fantome)+";"+str(lig)+";"+str(col)+"\n"
         return res
-
