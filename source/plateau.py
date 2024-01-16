@@ -429,7 +429,7 @@ def case_vide(plateau):
     return pos
 
 
-def directions_possibles(plateau,pos,passemuraille=False):
+def directions_possibles(plateau, pos, passemuraille=False):
     """ retourne les directions vers où il est possible de se déplacer à partir
         de la position pos
 
@@ -464,6 +464,7 @@ def analyse_plateau(plateau, pos, direction, distance_max):
         plateau (dict): le plateau considéré
         pos (tuple): une paire d'entiers indiquant la postion de calcul des distances
         distance_max (int): un entier indiquant la distance limite de la recherche
+
     Returns:
         dict: un dictionnaire de listes. 
                 Les clés du dictionnaire sont 'objets', 'pacmans' et 'fantomes'
@@ -473,7 +474,54 @@ def analyse_plateau(plateau, pos, direction, distance_max):
             S'il n'est pas possible d'aller dans la direction indiquée à partir de pos
             la fonction retourne None
     """ 
-    pass
+
+    def add_case_in_res(plateau, res, pos, distance):
+        """_summary_
+
+        Args:
+            plateau (dict)): Le plateau considéré
+            res (dict): un dictionnaire de listes
+            pos (tuple): une paire (lig,col) d'int
+            distance (int): une distance
+        """
+
+        case_actuelle = get_case(plateau, pos)
+        objet = case.get_objet(case_actuelle)
+
+        if objet in const.LES_OBJETS:
+            res["objets"].append((distance, objet))
+        
+        res["pacmans"] += [(distance, pacman) for pacman in case.get_pacmans(case_actuelle)]
+        res["fantomes"] += [(distance, fantome) for fantome in case.get_fantomes(case_actuelle)]
+
+    
+    next_pos = pos_arrivee(plateau, pos, direction)
+    if case.est_mur(get_case(plateau, next_pos)):
+        return 
+
+    res = {'objets': [], 
+           'pacmans': [], 
+           'fantomes': []}
+    
+    parcourues, next_cases = set(), [(next_pos, 1)]
+
+    while next_cases:
+        case_actuelle = min(next_cases, key = lambda cas: cas[1])
+
+        if case_actuelle[1] > distance_max:
+            return res
+        
+        add_case_in_res(plateau, res, case_actuelle[0], case_actuelle[1])
+        parcourues.add(case_actuelle[0])
+
+        for direction in directions_possibles(plateau, case_actuelle[0]):
+            next_pos = pos_arrivee(plateau, case_actuelle[0], direction)
+            if next_pos not in parcourues:
+                next_cases.append((next_pos, case_actuelle[1] + 1))
+        
+        next_cases.remove(case_actuelle)
+
+    return res
 
 
 def prochaine_intersection(plateau, pos, direction):
