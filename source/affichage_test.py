@@ -13,6 +13,46 @@ import const
 import case
 import plateau
 from math import pi
+
+def get_voisinage(plat,pos):
+    """retourne un liste de booléens indiquant dans le voisinage d'une case où se
+    trouvent les murs.
+    +-+-+-+
+    |0|1|2|     Indices dans la liste de booléens indiquant le voisinage
+    +-+-+-+
+    |3| |4|
+    +-+-+-+
+    |5|6|7|
+    +-+-+-+
+
+    Args:
+        plateau (dict): le plateau considéré
+        pos (tuple): une pair d'entiers indiquant la position sur le plateau
+    Returns:
+        list(bool): une liste de booléens indiquant où se trouvent les murs dans
+        dans le voisinage d'un case.
+    """
+    vois=[]
+    for lin in range(-1,2):
+        ligne=pos[0]+lin
+        if ligne<0:
+            vois=[False,False,False]
+            continue
+        if ligne >= plateau.get_nb_lignes(plat):
+            vois.extend([False,False,False])
+            continue
+        for col in range(-1,2):
+            if lin==0 and col==0:
+                continue
+            colonne=pos[1]+col
+            if colonne<0:
+                vois.append(False)
+            elif colonne>=plateau.get_nb_colonnes(plat):
+                vois.append(False)
+            else:
+                vois.append(case.est_mur(plateau.get_case(plat,(ligne,colonne))))
+    return vois
+
 class JeuGraphique(object):
     """Classe simple d'affichage d'une case."""
 
@@ -212,7 +252,7 @@ class JeuGraphique(object):
         self.surface.fill((0,0,0))
         for ligne in range(plateau.get_nb_lignes(le_plateau)):
             for colonne in range(plateau.get_nb_colonnes(le_plateau)):
-                voisinage=plateau.get_voisinage(le_plateau,(ligne,colonne))
+                voisinage=get_voisinage(le_plateau,(ligne,colonne))
                 self.dessiner_case2(plateau.get_case(le_plateau,(ligne,colonne)),
                                     ligne,colonne,voisinage)
 
