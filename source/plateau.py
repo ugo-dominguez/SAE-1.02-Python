@@ -124,6 +124,7 @@ def pos_arrivee(plateau,pos,direction):
 
     return next_pos
 
+
 def get_case(plateau, pos):
     """retourne la case qui se trouve à la position pos du plateau
 
@@ -181,7 +182,7 @@ def poser_objet(plateau, objet, pos):
         objet (int): un entier représentant l'objet. const.AUCUN indique aucun objet
         pos (tuple): une paire (lig,col) de deux int
     """
-    plateau['cases'][pos[0]][pos[1]] = objet
+    case.poser_objet(get_case(plateau, pos), objet)
 
 
 def Plateau(plan):
