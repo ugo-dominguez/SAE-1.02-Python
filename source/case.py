@@ -38,21 +38,17 @@ def est_mur(case):
     return case["mur"]
 
 
-
-
-
 def get_pacmans(case):
     """retourne l'ensemble des pacmans qui sont sur la case
-
-    Args:
+    else:
+        return None
         case (dict): la case considérée
 
     Returns:
         set: l'ensemble des identifiants de pacmans présents su la case.
     """
-    if case["pacmans_presents"] is None:
-        return set()
-    return case["pacmans_presents"]
+    return set() if case["pacmans_presents"] is None else case["pacmans_presents"]
+
 
 def get_fantomes(case):
     """retourne l'ensemble des fantomes qui sont sur la case
@@ -63,9 +59,7 @@ def get_fantomes(case):
     Returns:
         set: l'ensemble des identifiants de fantomes présents su la case.
     """
-    if case["fantomes_presents"] is None:
-        return set()
-    return case["fantomes_presents"]
+    return set() if case["fantomes_presents"] is None else case["fantomes_presents"]
 
 
 def get_nb_pacmans(case):
@@ -139,12 +133,9 @@ def poser_pacman(case, pacman):
         case (dict): la case considérée
         pacman (str): identifiant du pacman à ajouter sur la case
     """
-    pacmans_set = case.get("pacmans_presents")
-    if pacmans_set is None:
-        pacmans_set = set()
-    if not est_mur(case):
-        #il manque or pour le cas ou pacman est dans un mur avec le pass muraille
-        pacmans_set.add(pacman)
+    pacmans_set = get_pacmans(case)
+    pacmans_set.add(pacman)
+
     case["pacmans_presents"] = pacmans_set
 
 def prendre_pacman(case, pacman):
@@ -165,8 +156,6 @@ def prendre_pacman(case, pacman):
     if pacman in pacmans_set:
         pacmans_set.remove(pacman)
         return True
-    else:
-        return None
 
 
 def poser_fantome(case, fantome):
@@ -206,3 +195,4 @@ def prendre_fantome(case, fantome):
         return True
     else:
         return None
+
