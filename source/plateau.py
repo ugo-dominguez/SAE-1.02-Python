@@ -373,7 +373,16 @@ def directions_possibles(plateau,pos,passemuraille=False):
         str: une chaine de caractères indiquant les directions possibles
               à partir de pos
     """
-    pass
+    direct = ""
+    if not case.est_mur(get_case(plateau,pos_nord(plateau,pos))) or passemuraille :
+        direct += "N"
+    if not case.est_mur(get_case(plateau,pos_est(plateau,pos))) or passemuraille :
+        direct += "E"
+    if not case.est_mur(get_case(plateau,pos_sud(plateau,pos))) or passemuraille :
+        direct += "S"       
+    if not case.est_mur(get_case(plateau,pos_ouest(plateau,pos))) or passemuraille :
+        direct += "O"
+    return direct
 #---------------------------------------------------------#
 
 
