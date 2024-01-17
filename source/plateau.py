@@ -551,6 +551,52 @@ def prochaine_intersection(plateau, pos, direction):
 
     return distance
 
+def distance_max(plateau, pos, direction):
+    """ calcule la position d'arrivée si on part de pos et qu'on va dans
+    la direction indiquée en tenant compte que le plateau est un tore
+    si la direction n'existe pas la fonction retourne None
+
+    Args:
+        plateau (dict): Le plateau considéré
+        pos (tuple): une paire d'entiers qui donne la position de départ
+        direction (str): un des caractère NSEO donnant la direction du déplacement
+
+    Returns:
+        None|tuple: None ou une paire d'entiers indiquant la position d'arrivée
+    """
+
+    distance = 0
+    mur = False
+    while mur != True:
+        if direction == 'O':
+            if case.est_mur(get_case(plateau,pos)):
+                mur = True
+            else:
+                distance += 1
+                pos = pos_ouest(plateau, pos)
+
+        elif direction == 'E':
+            if case.est_mur(get_case(plateau,pos)):
+                mur = True
+            else:
+                distance += 1
+                pos = pos_est(plateau, pos)
+
+        elif direction == 'N':
+            if case.est_mur(get_case(plateau,pos)):
+                mur = True
+            else:
+                distance += 1
+                pos = pos_nord(plateau, pos)
+
+        elif direction == 'S':
+            if case.est_mur(get_case(plateau,pos)):
+                mur = True
+            else:
+                distance += 1
+                pos = pos_sud(plateau, pos)
+
+    return distance
 
 # A NE PAS DEMANDER
 def plateau_2_str(plateau):
