@@ -598,6 +598,72 @@ def distance_max(plateau, pos, direction):
 
     return distance
 
+def info_zone(zone,nom):
+    info = {"fantomes" : 0 , "nb_points": 0 , "joueur" : 0, "Present" : False}
+    for cases in zone:
+        for c in cases:
+            info["fantomes"] += case.get_nb_fantomes(c) 
+            info["joueur"]+=case.get_nb_pacmans(c)
+            obj = case.get_objet(c)
+            if obj != const.AUCUN:
+                info["nb_points"]+= const.PROP_OBJET[obj][0]
+            if c['pacmans_presents'] is not None :
+                if nom in c['pacmans_presents']:
+                    info["Present"] = True
+    return info 
+
+def Zone_sec(plateau,nom):
+    i = get_nb_lignes(plateau)
+    j = get_nb_colonnes(plateau)
+    tailletot = i*j
+    taille = j//2
+    cases = plateau["cases"]
+    zoneNO = []
+    zoneNE = []
+    zoneSO = []
+    zoneSE = []
+    for x in range(i//2):
+        zoneNO+=cases[j*x:j*x+taille]
+    for y in range(i//2):
+        zoneNE+=cases[taille+j*y:j*y+j]
+    for z in range(i//2):
+        zoneSO+= cases[j*(i//2+z):j*(i//2+z)+taille]
+    for a in range(i//2):
+        zoneSE += cases[j*(i//2+a)+taille:j*(i//2+a)+2*taille]
+    return info_zone(zoneNO,nom),info_zone(zoneNE,nom),info_zone(zoneSO,nom),info_zone(zoneSE,nom)
+
+
+
+def risque_zone(plateau,pos,info_zone):
+    risque = info_zone["fantomes"]*200
+    risque+= info_zone["joueur"]*50
+    risque-= info_zone["nb_points"]
+    return risque
+
+def risque(plateau,pos,choix):
+    risque = 500//choix["fantomes"][0]
+    risque += 100//choix["joueur"][0]
+    risque -= (1000//choix["objets"][0])  
+    risque -= const.PROP_OBJET(choix["objets"][1])[0]
+    return risque
+
+
+def deplacement(plateau,pos,pacman):
+    if const.PASSEMURAILLE in joueur.get_objet(pacman):
+        passemuraille = True
+    else:
+        passemuraille = False
+    direct = directions_possibles(plateau,pos,passemuraille)
+    m = []
+    for d in direct:
+        a = analyse_plateau(plateau,pos,d,distance_max(plateau,pos,d))
+        if a is not None:
+            m.append((a,d))
+    def critere():
+        return risque(plateau,pos,m[[0]])
+    choix = min(m,critere) 
+    return choix[1]
+
 # A NE PAS DEMANDER
 def plateau_2_str(plateau):
         res = str(get_nb_lignes(plateau))+";"+str(get_nb_colonnes(plateau))+"\n"
