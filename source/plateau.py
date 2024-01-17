@@ -11,6 +11,7 @@
 import const
 import case
 import random
+import joueur
 
 
 def get_nb_lignes(plateau):
@@ -232,7 +233,7 @@ def Plateau(plan):
     def positions(nb_entite, ind_entite):
         """Créer un dictionnaire contenant les noms des entités en clé, et leurs positions en valeurs
 
-        Args:
+        Args:1000//
             nb_entite (int): le nombre d'entité à prendre en compte
             ind_entite (int): l'indice de début d'informations des entités
 
@@ -462,7 +463,7 @@ def analyse_plateau(plateau, pos, direction, distance_max):
 
     Args:
         plateau (dict): le plateau considéré
-        pos (tuple): une paire d'entiers indiquant la postion de calcul des distances
+        pos (tuple): une paire d'entiers indiquant la postion de calcul des distanceschoix["joueur"][0]
         distance_max (int): un entier indiquant la distance limite de la recherche
 
     Returns:
@@ -551,16 +552,46 @@ def prochaine_intersection(plateau, pos, direction):
 
     return distance
 
+
+# A NE PAS DEMANDER
+def plateau_2_str(plateau):
+        res = str(get_nb_lignes(plateau))+";"+str(get_nb_colonnes(plateau))+"\n"
+        pacmans = []
+        fantomes = []
+        for lig in range(get_nb_lignes(plateau)):
+            ligne = ""
+            for col in range(get_nb_colonnes(plateau)):
+                la_case = get_case(plateau,(lig, col))
+                if case.est_mur(la_case):
+                    ligne += "#"
+                    les_pacmans = case.get_pacmans(la_case)
+                    for pac in les_pacmans:
+                        pacmans.append((pac, lig, col))
+                else:
+                    obj = case.get_objet(la_case)
+                    les_pacmans = case.get_pacmans(la_case)
+                    les_fantomes= case.get_fantomes(la_case)
+                    ligne += str(obj)
+                    for pac in les_pacmans:
+                        pacmans.append((pac, lig, col))
+                    for fantome in les_fantomes:
+                        fantomes.append((fantome,lig,col))
+            res += ligne+"\n"
+        res += str(len(pacmans))+'\n'
+        for pac, lig, col in pacmans:
+            res += str(pac)+";"+str(lig)+";"+str(col)+"\n"
+        res += str(len(fantomes))+"\n"
+        for fantome, lig, col in fantomes:
+            res += str(fantome)+";"+str(lig)+";"+str(col)+"\n"
+        return res
 def distance_max(plateau, pos, direction):
     """ calcule la position d'arrivée si on part de pos et qu'on va dans
     la direction indiquée en tenant compte que le plateau est un tore
     si la direction n'existe pas la fonction retourne None
-
     Args:
         plateau (dict): Le plateau considéré
         pos (tuple): une paire d'entiers qui donne la position de départ
         direction (str): un des caractère NSEO donnant la direction du déplacement
-
     Returns:
         None|tuple: None ou une paire d'entiers indiquant la position d'arrivée
     """
@@ -634,22 +665,34 @@ def Zone_sec(plateau,nom):
 
 
 
-def risque_zone(plateau,pos,info_zone):
+def risque_zone(info_zone):
     risque = info_zone["fantomes"]*200
     risque+= info_zone["joueur"]*50
     risque-= info_zone["nb_points"]
     return risque
 
-def risque(plateau,pos,choix):
-    risque = 500//choix["fantomes"][0]
-    risque += 100//choix["joueur"][0]
-    risque -= (1000//choix["objets"][0])  
-    risque -= const.PROP_OBJET(choix["objets"][1])[0]
+def risque(choix):
+    risque = 0
+
+    for fantome in choix["fantomes"]:
+        if fantome != []:
+            risque = 500//fantome[0]
+    
+    for pc in choix["pacmans"]:
+        if pc != []:   
+            risque += 100//pc[0]
+
+    for obj in choix["objets"]:
+        if obj != []:
+            risque -= (1000//obj[0])  
+            risque -= const.PROP_OBJET[obj[1]][0]
+        
     return risque
 
 
 def deplacement(plateau,pos,pacman):
-    if const.PASSEMURAILLE in joueur.get_objet(pacman):
+    
+    if const.PASSEMURAILLE in joueur.get_objets(pacman):
         passemuraille = True
     else:
         passemuraille = False
@@ -659,39 +702,13 @@ def deplacement(plateau,pos,pacman):
         a = analyse_plateau(plateau,pos,d,distance_max(plateau,pos,d))
         if a is not None:
             m.append((a,d))
-    def critere():
-        return risque(plateau,pos,m[[0]])
-    choix = min(m,critere) 
+    if  m[0][0]["fantomes"] !=[] and m is not None and m[0][0]["fantomes"][0][0] <= 5:
+        res = ""
+        for c in const.DIRECTIONS:
+            if c not in direct:
+                res += c
+        return res[0]
+    def critere(tuple):
+        return risque(tuple[0])
+    choix = min(m, key = critere) 
     return choix[1]
-
-# A NE PAS DEMANDER
-def plateau_2_str(plateau):
-        res = str(get_nb_lignes(plateau))+";"+str(get_nb_colonnes(plateau))+"\n"
-        pacmans = []
-        fantomes = []
-        for lig in range(get_nb_lignes(plateau)):
-            ligne = ""
-            for col in range(get_nb_colonnes(plateau)):
-                la_case = get_case(plateau,(lig, col))
-                if case.est_mur(la_case):
-                    ligne += "#"
-                    les_pacmans = case.get_pacmans(la_case)
-                    for pac in les_pacmans:
-                        pacmans.append((pac, lig, col))
-                else:
-                    obj = case.get_objet(la_case)
-                    les_pacmans = case.get_pacmans(la_case)
-                    les_fantomes= case.get_fantomes(la_case)
-                    ligne += str(obj)
-                    for pac in les_pacmans:
-                        pacmans.append((pac, lig, col))
-                    for fantome in les_fantomes:
-                        fantomes.append((fantome,lig,col))
-            res += ligne+"\n"
-        res += str(len(pacmans))+'\n'
-        for pac, lig, col in pacmans:
-            res += str(pac)+";"+str(lig)+";"+str(col)+"\n"
-        res += str(len(fantomes))+"\n"
-        for fantome, lig, col in fantomes:
-            res += str(fantome)+";"+str(lig)+";"+str(col)+"\n"
-        return res
