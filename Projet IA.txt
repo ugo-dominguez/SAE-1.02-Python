@@ -1,0 +1,18 @@
+Projet IA
+
+Idées Pacman:
+
+Indice de risque en % / prioritées
+baisser le risque quand il y a des intersections proches
+4 zones / pouvoir glouton
+Regard si bloque intersection
+Si pacman fait 4 faux mouvement il est tp, donc s'il n'a pas de possibilité, il utilise TP
+Si dans le calque il y a 5 cases autours de lui il TP
+Regarder le calque et prioriser les points et les objets
+
+Idées fantome:
+
+Essayer de bloquer le pacman aux intersections
+Pour le glouton esssayer de fuir le plus loin du pacman
+Pour un fantome à une intersection éviter d'être au niveau de la même intersections
+indice de points, plus il est proche de pacman + il gagne de point, plus il est proche d'un autre fantome - il gagne
