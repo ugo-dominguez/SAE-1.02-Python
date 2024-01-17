@@ -42,8 +42,8 @@
 ### Lancer le jeu
 ```bash
 python3 affichage.py&
-2 python3 client_joueur.py --equipe joueur1&
-3 python3 client_joueur.py --equipe joueur2&
-4 python3 client_joueur.py --equipe joueur3&
-5 python3 client_joueur.py --equipe joueur4&
+python3 client_joueur.py --equipe joueur1&
+python3 client_joueur.py --equipe joueur2&
+python3 client_joueur.py --equipe joueur3&
+python3 client_joueur.py --equipe joueur4&
 ```
