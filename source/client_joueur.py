@@ -94,7 +94,7 @@ def mon_IA(ma_couleur, carac_jeu, plan, les_joueurs):
     
 
     # IA complètement aléatoire
-    dir_p = prendre_objets()
+    dir_p = plateau.deplacement(le_plateau,joueur.get_pos_pacman(joueurs[ma_couleur]),joueurs[ma_couleur])
     dir_f = suivre_ou_fuir(False)
 
     #plateau.analyse_plateau(le_plateau, )
