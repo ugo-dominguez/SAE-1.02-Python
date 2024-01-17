@@ -22,7 +22,7 @@ import joueur
 
 prec='X'
 
-def mon_IA(ma_couleur,carac_jeu, plan, les_joueurs):
+def mon_IA(ma_couleur, carac_jeu, plan, les_joueurs):
     """ Cette fonction permet de calculer les deux actions du joueur de couleur ma_couleur
         en fonction de l'état du jeu décrit par les paramètres. 
         Le premier caractère est parmi XSNOE X indique pas de peinture et les autres
@@ -42,17 +42,65 @@ def mon_IA(ma_couleur,carac_jeu, plan, les_joueurs):
         str: une chaine de deux caractères en majuscules indiquant la direction de peinture
             et la direction de déplacement
     """
+
     # decodage des informations provenant du serveur
-    joueurs={}
+    joueurs = {}
+
     for ligne in les_joueurs.split('\n'):
-        lejoueur=joueur.joueur_from_str(ligne)
-        joueurs[joueur.get_couleur(lejoueur)]=lejoueur
-    le_plateau=plateau.Plateau(plan)
+        lejoueur = joueur.joueur_from_str(ligne)
+        joueurs[joueur.get_couleur(lejoueur)] = lejoueur
+
+    le_plateau = plateau.Plateau(plan)
+
+
+    def get_analyse(pos):
+        directions = plateau.directions_possibles(le_plateau, pos)
+        res = dict()
+
+        for card in directions:
+            res[card] = plateau.analyse_plateau(le_plateau, pos, card, plateau.get_nb_lignes(le_plateau))
+
+        return res
     
+
+    def suivre_ou_fuir(glouton):
+        """va vers le pacman le plus proche s'il n'a pas de glouton
+        s'il en a un, le fantome va fuir
+
+        Args:
+            glouton (bool): si le pacman est glouton
+
+        Returns:
+            str: la direction à prendre
+        """
+
+        pos_fantome = joueur.get_pos_fantome(joueurs[ma_couleur])
+        analyse = get_analyse(pos_fantome)
+
+        func = max if glouton else min
+        direction_pacman = func(analyse, key = lambda direct: analyse[direct]["pacmans"])
+
+        return random.choice("NOSE") if direction_pacman is None else direction_pacman
+    
+
+    def prendre_objets():
+
+        pos_pacman = joueur.get_pos_pacman(joueurs[ma_couleur])
+        analyse = get_analyse(pos_pacman)
+
+        direction_pacman = min(analyse, key = lambda direct: analyse[direct]["objets"])
+
+        return random.choice("NOSE") if direction_pacman is None else direction_pacman
+    
+
     # IA complètement aléatoire
-    dir_p=  random.choice("NESO")
-    dir_f=  random.choice("NESO")
-    return dir_p+dir_f          
+    dir_p = prendre_objets()
+    dir_f = suivre_ou_fuir(False)
+
+    #plateau.analyse_plateau(le_plateau, )
+
+    return dir_p + dir_f
+
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()  
@@ -73,3 +121,4 @@ if __name__=="__main__":
             le_client.envoyer_commande_client(actions_joueur)
             # le_client.afficher_msg("sa reponse  envoyée "+str(id_joueur)+args.nom_equipe)
     le_client.afficher_msg("terminé")
+
