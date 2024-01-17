@@ -28,11 +28,13 @@
 
 ### Exemple de joueur
 ```python
-{'couleur': 'A',
+{
+'couleur': 'A',
 'nom': 'tom',
 'nb_points': 53, 
 'nb_faux_mvt': 2,  
 'pos_pacman': (12,27), 
 'pos_fantome': (2,14), 
-'objets': {const.GLOUTON: 3, const.IMMOBILITE: 0, const.PASSEMURAILLE: 1}}
+'objets': {const.GLOUTON: 3, const.IMMOBILITE: 0, const.PASSEMURAILLE: 1}
+}
 ```
