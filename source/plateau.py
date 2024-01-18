@@ -454,7 +454,7 @@ def directions_possibles(plateau, pos, passemuraille=False):
     return directions
 
 
-def analyse_plateau(plateau, pos, direction, distance_max):
+def analyse_plateau(plateau, pos, direction, distance_max, skip=None):
     """calcul les distances entre la position pos est les différents objets et
         joueurs du plateau si on commence par partir dans la direction indiquée
         en se limitant à la distance max. Si il n'est pas possible d'aller dans la
@@ -475,7 +475,7 @@ def analyse_plateau(plateau, pos, direction, distance_max):
             la fonction retourne None
     """ 
 
-    def add_case_in_res(plateau, res, pos, distance):
+    def add_case_in_res(res, pos, distance):
         """_summary_
 
         Args:
@@ -488,11 +488,11 @@ def analyse_plateau(plateau, pos, direction, distance_max):
         case_actuelle = get_case(plateau, pos)
         objet = case.get_objet(case_actuelle)
 
-        if objet in const.LES_OBJETS:
+        if objet != skip and objet in const.LES_OBJETS:
             res["objets"].append((distance, objet))
-        
-        res["pacmans"] += [(distance, pacman) for pacman in case.get_pacmans(case_actuelle)]
-        res["fantomes"] += [(distance, fantome) for fantome in case.get_fantomes(case_actuelle)]
+            
+        res["pacmans"] += [(distance, pacman) for pacman in case.get_pacmans(case_actuelle) if skip != pacman]
+        res["fantomes"] += [(distance, fantome) for fantome in case.get_fantomes(case_actuelle) if skip != fantome]
 
     
     next_pos = pos_arrivee(plateau, pos, direction)
@@ -511,7 +511,7 @@ def analyse_plateau(plateau, pos, direction, distance_max):
         if case_actuelle[1] > distance_max:
             return res
         
-        add_case_in_res(plateau, res, case_actuelle[0], case_actuelle[1])
+        add_case_in_res(res, case_actuelle[0], case_actuelle[1])
         parcourues.add(case_actuelle[0])
 
         for direction in directions_possibles(plateau, case_actuelle[0]):
