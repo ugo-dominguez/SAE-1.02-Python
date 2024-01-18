@@ -38,20 +38,3 @@
 'objets': {const.GLOUTON: 3, const.IMMOBILITE: 0, const.PASSEMURAILLE: 1}
 }
 ```
-
-### Lancer le jeu
-```bash
-python3 affichage.py&
-python3 ia_tom.py --equipe Tom&
-python3 ia_classique.py --equipe J2&
-python3 ia_classique.py --equipe J3&
-python3 ia_classique.py --equipe J4&
-```
-
-```bash
-py .\affichage.py
-py .\ia_tom.py --equipe Tom
-py .\ia_classique.py --equipe J2
-py .\ia_classique.py --equipe J3
-py .\ia_classique.py --equipe J4
-```
