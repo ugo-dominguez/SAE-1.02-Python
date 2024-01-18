@@ -11,7 +11,6 @@
 import const
 import case
 import random
-import joueur
 
 
 def get_nb_lignes(plateau):
