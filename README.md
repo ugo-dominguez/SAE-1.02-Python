@@ -42,16 +42,16 @@
 ### Lancer le jeu
 ```bash
 python3 affichage.py&
-python3 client_joueur.py --equipe Tom&
-python3 client_joueur.py --equipe J2&
-python3 client_joueur.py --equipe J3&
-python3 client_joueur.py --equipe J4&
+python3 ia_tom.py --equipe Tom&
+python3 ia_classique.py --equipe J2&
+python3 ia_classique.py --equipe J3&
+python3 ia_classique.py --equipe J4&
 ```
 
 ```bash
 py .\affichage.py
-py .\client_joueur.py --equipe Tom
-py .\client_joueur.py --equipe J2
-py .\client_joueur.py --equipe J3
-py .\client_joueur.py --equipe J4
+py .\ia_tom.py --equipe Tom
+py .\ia_classique.py --equipe J2
+py .\ia_classique.py --equipe J3
+py .\ia_classique.py --equipe J4
 ```
