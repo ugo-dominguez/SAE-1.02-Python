@@ -49,9 +49,9 @@ python3 client_joueur.py --equipe J4&
 ```
 
 ```bash
-py .\affichage.py | 
-py .\client_joueur.py --equipe Tom |
-py .\client_joueur.py --equipe J2 |
-py .\client_joueur.py --equipe J3 |
+py .\affichage.py
+py .\client_joueur.py --equipe Tom
+py .\client_joueur.py --equipe J2
+py .\client_joueur.py --equipe J3
 py .\client_joueur.py --equipe J4
 ```
