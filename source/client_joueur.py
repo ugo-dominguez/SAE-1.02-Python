@@ -58,9 +58,78 @@ def mon_IA(ma_couleur, carac_jeu, plan, les_joueurs):
         res = dict()
 
         for card in directions:
-            res[card] = plateau.analyse_plateau(le_plateau, pos, card, plateau.get_nb_lignes(le_plateau))
+            res[card] = plateau.analyse_plateau(le_plateau, pos, card, plateau.get_nb_lignes(le_plateau) + plateau.get_nb_colonnes(le_plateau))
 
         return res
+    
+
+    def tue_fantomes():
+
+        pos_pacman = joueur.get_pos_pacman(joueurs[ma_couleur])
+        analyse = get_analyse(pos_pacman)
+
+        if analyse is not None:
+            direction_pacman = min(analyse, key = lambda direct: analyse[direct]["fantomes"])
+        else:
+            direction_pacman = random.choice("NOSE")
+        
+        return random.choice("NOSE") if direction_pacman is None else direction_pacman
+    
+
+    def tp(analyse, pos):
+
+        cpt, mini = 0, float('inf')
+        for d in analyse:
+            for fantome in analyse[d]['fantomes']:
+                if fantome[1] != ma_couleur and fantome[0] <= 5:
+                    cpt += 1
+
+            for objet in analyse[d]['objets']:
+                if objet[0] <= mini:
+                    mini = objet[0]
+
+        if cpt >= 2 or mini >= 20:
+            directions = plateau.directions_possibles(le_plateau, pos, const.PASSEMURAILLE in joueur.get_objets(joueurs[ma_couleur]))
+
+            res = ""
+            for c in const.DIRECTIONS:
+                if c not in directions:
+                    res += c
+
+            return res[0] if len(res) > 0 else random.choice("NOSE")
+        
+
+    def ia_pacman():
+
+        pos_pacman = joueur.get_pos_pacman(joueurs[ma_couleur])
+        analyse = get_analyse(pos_pacman)
+
+        if joueur.get_duree(joueurs[ma_couleur], const.GLOUTON) > 10 and const.GLOUTON in joueur.get_objets(joueurs[ma_couleur]):
+            return tue_fantomes()
+
+        doit_tp = tp(analyse, pos_pacman)
+        if doit_tp is not None:
+            return doit_tp
+        
+        if analyse is not None:
+            direction_pacman = min(analyse, key = lambda direct: analyse[direct]["objets"])
+        else:
+            direction_pacman = random.choice("NOSE")
+
+        return random.choice("NOSE") if direction_pacman is None else direction_pacman
+    
+
+    def pacman_default():
+
+        pos_pacman = joueur.get_pos_pacman(joueurs[ma_couleur])
+        analyse = get_analyse(pos_pacman)
+
+        if analyse is not None:
+            direction_pacman = min(analyse, key = lambda direct: analyse[direct]["objets"])
+        else:
+            direction_pacman = random.choice("NOSE")
+
+        return random.choice("NOSE") if direction_pacman is None else direction_pacman
     
 
     def suivre_ou_fuir(glouton):
@@ -77,25 +146,49 @@ def mon_IA(ma_couleur, carac_jeu, plan, les_joueurs):
         pos_fantome = joueur.get_pos_fantome(joueurs[ma_couleur])
         analyse = get_analyse(pos_fantome)
 
+        for d in analyse:
+            pacmans_proches = analyse[d]["pacmans"]
+            if len(pacmans_proches) > 0 and pacmans_proches[0][1] == ma_couleur:
+                pacmans_proches.remove(pacmans_proches[0])
+
         func = max if glouton else min
-        direction_pacman = func(analyse, key = lambda direct: analyse[direct]["pacmans"])
+        if analyse is not None:
+            direction_pacman = func(analyse, key = lambda direct: analyse[direct]["pacmans"])
+        else:
+            direction_pacman = random.choice("NOSE")
 
         return random.choice("NOSE") if direction_pacman is None else direction_pacman
     
 
-    def prendre_objets():
+    def fantome_default():
+
+        pos_fantome = joueur.get_pos_fantome(joueurs[ma_couleur])
+        analyse = get_analyse(pos_fantome)
+
+        if analyse is not None:
+            direction_pacman = min(analyse, key = lambda direct: analyse[direct]["pacmans"])
+        else:
+            direction_pacman = random.choice("NOSE")
+
+        return random.choice("NOSE") if direction_pacman is None else direction_pacman
+    
+
+    def pacman_default():
 
         pos_pacman = joueur.get_pos_pacman(joueurs[ma_couleur])
         analyse = get_analyse(pos_pacman)
 
-        direction_pacman = min(analyse, key = lambda direct: analyse[direct]["objets"])
+        if analyse is not None:
+            direction_pacman = min(analyse, key = lambda direct: analyse[direct]["objets"])
+        else:
+            direction_pacman = random.choice("NOSE")
 
         return random.choice("NOSE") if direction_pacman is None else direction_pacman
     
 
     # IA complètement aléatoire
-    dir_p = plateau.deplacement(le_plateau,joueur.get_pos_pacman(joueurs[ma_couleur]),joueurs[ma_couleur])
-    dir_f = suivre_ou_fuir(False)
+    dir_p = ia_pacman() if joueur.get_nom(joueurs[ma_couleur]) == 'Tom' else pacman_default()
+    dir_f = suivre_ou_fuir(False) if joueur.get_nom(joueurs[ma_couleur]) == 'Tom' else suivre_ou_fuir(False)
 
     #plateau.analyse_plateau(le_plateau, )
 
@@ -121,4 +214,3 @@ if __name__=="__main__":
             le_client.envoyer_commande_client(actions_joueur)
             # le_client.afficher_msg("sa reponse  envoyée "+str(id_joueur)+args.nom_equipe)
     le_client.afficher_msg("terminé")
-
